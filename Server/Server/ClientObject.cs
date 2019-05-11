@@ -10,70 +10,47 @@ namespace Server
     public class ClientObject
     {
         ServerObject server;
-        User user;
-        int receivePort; // порт который будет принимать сообщения от данного клиента
+        public User user;
 
-        static byte[] buffer = new byte[1024];
-        static MemoryStream stream = new MemoryStream(buffer);
-        BinaryReader reader = new BinaryReader(stream);
-        BinaryWriter writer = new BinaryWriter(stream);
+        static byte[] buffer = new byte[256];
 
         List<string> listCode = new List<string>();
 
-        public ClientObject(ServerObject _server, User _user, int _port)
+        public ClientObject(ServerObject _server, User _user)
         {
             server = _server;
             user = _user;
-            receivePort = _port;
-            server.UserIsAdded(this);
         }
-        // priem sms ot konkretnogo polzovatelya
-        public void Listen()
-        {
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint receiveIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), receivePort);
-            socket.Bind(receiveIP);
 
-            while (true)
+        /// <summary>
+        /// Обработчик данных полученных от клиента
+        /// </summary>
+        /// <param name="data">Данные для обработки</param>
+        internal void HandlerData(string data)
+        {
+            string[] codes = data.Split(';');
+            foreach (string s in codes)
+                listCode.Add(s);
+
+            if (listCode.Count == 0)
             {
-                StringBuilder builder = new StringBuilder();
-                int bytes = 0;
-                EndPoint senderIP = new IPEndPoint(user.FullInfoIP.Address, user.FullInfoIP.Port);
-
-                do
-                {
-                    bytes = socket.ReceiveFrom(buffer, ref senderIP);
-                }
-                while (socket.Available > 0);
-
-                bool getData = true;
-                stream.Position = 0;
-                while (getData)
-                {
-                    string data = reader.ReadString();
-
-                    if (data != "")
-                        listCode.Add(data);
-                    else
-                        getData = false;
-                }
-                HandleReceiveData();
+                buffer = Encoding.UTF8.GetBytes("Not receive data!!!");
+                server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
+                return;
             }
-        }
-        private void HandleReceiveData()
-        {
+
             for (int i = 0; i < listCode.Count; i++)
             {
-                stream.SetLength(0);
                 switch (listCode[i])
                 {
-                    case "Status":
-                        string message = null;
+                    case "status":
+                        string message = "";
                         for (int c = 0; c < server.users.Count; c++)
                         {
-                            message += server.users[i].Name + "\n";
+                            message += server.users[c].user.Name + ":" + "color" + ";\n";
                         }
-                        writer.Write(message);
+                        Console.WriteLine(message);
+                        buffer = Encoding.UTF8.GetBytes(message);
                         server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
                         break;
                 }

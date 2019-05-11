@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Client
@@ -12,134 +13,143 @@ namespace Client
         public MainForm()
         {
             InitializeComponent();
+
+            Btn_Connect_Click();
         }
 
-        private int acceptPort;
-        private int sendPort;
-        private Socket socket;
-        private IPAddress address;
+        private int serverPort; // Порт, который прослушивает сервер
+        private IPAddress serverAddress; // IP адрес машины на котором запущен сервер
+        private EndPoint serverPoint; // Точка сервера, на которую будут отправлятся данные
+        private Socket socket; // Сокет
 
-        private bool connected = false;
+        private bool connected = false; // Режим клиента
 
-        private static byte[] buffer = new byte[1024];
-        private static MemoryStream stream = new MemoryStream(buffer);
-        private BinaryWriter writer = new BinaryWriter(stream);
-        private BinaryReader reader = new BinaryReader(stream);
+        private byte[] buffer = new byte[256]; // Массив байт, в котором будут хронится полученные данные или данные для отправки
 
-        private List<string> listCode = new List<string>();
-
-        void SendData(int port)
+        /// <summary>
+        /// Отправка данных на сервер
+        /// </summary>
+        /// <param name="data">Сообщение для отправки</param>
+        void SendData(string data)
         {
-            EndPoint _serverPoint = new IPEndPoint(address, port);
-            EndPoint serverPoint = _serverPoint;
-            socket.SendTo(buffer, serverPoint);
+            buffer = Encoding.UTF8.GetBytes(data); // Получаем массив байт из сообщения
+            socket.SendTo(buffer, serverPoint); // Отправляем массив байт серверу
         }
 
+
+        /// <summary>
+        /// Прием данных от сервера
+        /// </summary>
         void ReceiveData()
         {
-            int bytes = 0;
-
-            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-            listCode.Clear();
-            do
+            try
             {
-                bytes = socket.ReceiveFrom(buffer, ref remoteIp);
+                int bytes = 0; // Счетчик полученных байт с сервера
+                buffer = new byte[256]; // Массив байт, для данных полученых с сервера
+
+                StringBuilder builder = new StringBuilder();
+                EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
+
+                do
+                {
+                    bytes = socket.ReceiveFrom(buffer, ref remoteIp); // Прием данных от сервера
+                    builder.Append(Encoding.UTF8.GetString(buffer, 0, bytes)); // Строим сообщение из полученных данных ( массива байт )
+                }
+                while (socket.Available > 0);
+
+                IPEndPoint remoteFullIP = remoteIp as IPEndPoint;
+
+                HandlReceivedData(builder.ToString()); // Вызов метода для обработки полученных данных
             }
-            while (socket.Available > 0);
-
-            bool getData = true;
-
-            stream.Position = 0;
-            while (getData)
+            catch (Exception ex)
             {
-                string data = reader.ReadString();
-
-                if (data != "")
-                {
-                    listCode.Add(data);
-                }
-                else
-                {
-                    getData = false;
-                }
+                //Debug.Log("Error in ReceiveData: " + ex.Message);
             }
-
-            IPEndPoint remoteFullIP = remoteIp as IPEndPoint;
-
-            HandleReceivedData();
         }
 
-        void HandleReceivedData()
+        /// <summary>
+        /// Обработка полученных данных
+        /// </summary>
+        /// <param name="data">Данные которые необходимо обработать</param>
+        void HandlReceivedData(string data)
         {
-            if (connected == false && listCode[0] == "1")
+            // Если клиент не подключен к серверу и сообщение от сервера это "1", тогда переводим клиент в режим "подключенного клиента"
+            if (connected == false && data == "1")
             {
                 connected = true;
-                //_btnConnect.text = "Отключиться";
-                //_logs.text += "Вы успешно подключились";
+                //txtBtnConnect.text = "Отключиться!";
+                //txtLogs.text += "Вы успешно подключились!\n";
             }
-            else
+            else if (connected == true) // А если клиент подключен к серверу, выводим все данные полученные с сервера на экран
             {
-                //_logs.text += listCode[0] + "\n";
+                tbMessage.Text += data + "\n";
             }
         }
 
-        void Close()
+        /// <summary>
+        /// Закрытие сокета
+        /// </summary>
+        void CloseSocket()
         {
             if (socket != null)
             {
-                socket.Shutdown(SocketShutdown.Both);
-                //acceptPort = Int32.Parse(_acceptPort.text);
-                //sendPort = Int32.Parse(_sendPort.text);
+                socket.Close();
+                socket = null;
             }
         }
 
+        /// <summary>
+        /// Обработчик нажатия на кнопку "Подключится!"
+        /// </summary>
         public void Btn_Connect_Click()
         {
-            //address = IPAddress.Parse(_address.text);
-            //acceptPort = Int32.Parse(_acceptPort.text);
-            //sendPort = Int32.Parse(_sendPort.text);
+            // Заполнение переменных данными из InputField'ов
+            serverAddress = IPAddress.Parse("127.0.0.1");
+            serverPort = Int32.Parse("8083");
 
             try
             {
-                if (connected == false)
+                if (connected == false) // Если клиент не подключен
                 {
-                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                    IPEndPoint localIp = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 0);
-                    socket.Bind(localIp);
-                    //writer.Write(_name.text);
-                    //writer.Write(_color.text);
-                    SendData(acceptPort);
-                    ReceiveData();
+                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); // Инициализируем сокет
+                    IPEndPoint localIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 0); // Устанавливаем локальную точку клиента
+                    socket.Bind(localIP); // Привязываем точку
+
+                    serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные
+
+                    SendData("username"); // Отправляем данные на сервер
+                    ReceiveData(); // Ждем ответа от сервера
                 }
-                else
+                else // Если клиент подключен к серверу, закрываем сокет и переводим клиент в режим не подключенного клиента
                 {
-                    Close();
+                    CloseSocket();
                     connected = false;
-                    //_btnConnect.text = "Подключиться";
-                    //_logs.text += "Вы успешно отключились";
+                    //txtBtnConnect.text = "Подключиться!";
+                    //txtLogs.text += "Вы успешно отключились!";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Close();
+                //Debug.Log("Error in Btn_Connect_Click: " + ex.Message);
+                CloseSocket();
             }
         }
 
+        /// <summary>
+        /// Обработчик нажатия на кнопку "Статус.."
+        /// </summary>
         public void Btn_Status_Click()
         {
-            if (connected == true)
+            if (connected == true) // Если клиент подключен к серверу
             {
-
-                stream.SetLength(0);
-                writer.Write("STATUS");
-                SendData(sendPort);
-                ReceiveData();
+                SendData("status"); // Отправляем на сервер данные
+                ReceiveData(); // Ожидаем ответ от сервера
             }
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-
+            Btn_Status_Click();
         }
 
         private void btnReceive_Click(object sender, EventArgs e)
