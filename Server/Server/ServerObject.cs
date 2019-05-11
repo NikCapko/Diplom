@@ -156,13 +156,13 @@ namespace Server
             {
                 if (users[i].FullInfoIP.Address.ToString() != address && !reply)
                 {
-                    listeningSocket.SendTo(buffer, users[i].FullInfoIP);
+                    listeningSocket.SendTo(data, users[i].FullInfoIP);
                 }
                 else
                 {
                     if (users[i].FullInfoIP.Address.ToString() == address && reply)
                     {
-                        listeningSocket.SendTo(buffer, users[i].FullInfoIP);
+                        listeningSocket.SendTo(data, users[i].FullInfoIP);
                     }
                 }
             }
