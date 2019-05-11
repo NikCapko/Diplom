@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,8 +11,6 @@ namespace Client
         public MainForm()
         {
             InitializeComponent();
-
-            Btn_Connect_Click();
         }
 
         private int serverPort; // Порт, который прослушивает сервер
@@ -35,7 +31,6 @@ namespace Client
             buffer = Encoding.UTF8.GetBytes(data); // Получаем массив байт из сообщения
             socket.SendTo(buffer, serverPoint); // Отправляем массив байт серверу
         }
-
 
         /// <summary>
         /// Прием данных от сервера
@@ -74,15 +69,15 @@ namespace Client
         void HandlReceivedData(string data)
         {
             // Если клиент не подключен к серверу и сообщение от сервера это "1", тогда переводим клиент в режим "подключенного клиента"
-            if (connected == false && data == "1")
+            if (connected == false && data == "success")
             {
                 connected = true;
-                //txtBtnConnect.text = "Отключиться!";
+                btnConnect.Text = "Отключиться";
                 //txtLogs.text += "Вы успешно подключились!\n";
             }
             else if (connected == true) // А если клиент подключен к серверу, выводим все данные полученные с сервера на экран
             {
-                tbMessage.Text += data + "\n";
+                //tbMessage.Text += data + "\n";
             }
         }
 
@@ -99,46 +94,9 @@ namespace Client
         }
 
         /// <summary>
-        /// Обработчик нажатия на кнопку "Подключится!"
+        /// Обработчик нажатия на кнопку "Отправить сообщение"
         /// </summary>
-        public void Btn_Connect_Click()
-        {
-            // Заполнение переменных данными из InputField'ов
-            serverAddress = IPAddress.Parse("127.0.0.1");
-            serverPort = Int32.Parse("8083");
-
-            try
-            {
-                if (connected == false) // Если клиент не подключен
-                {
-                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); // Инициализируем сокет
-                    IPEndPoint localIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 0); // Устанавливаем локальную точку клиента
-                    socket.Bind(localIP); // Привязываем точку
-
-                    serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные
-
-                    SendData("username"); // Отправляем данные на сервер
-                    ReceiveData(); // Ждем ответа от сервера
-                }
-                else // Если клиент подключен к серверу, закрываем сокет и переводим клиент в режим не подключенного клиента
-                {
-                    CloseSocket();
-                    connected = false;
-                    //txtBtnConnect.text = "Подключиться!";
-                    //txtLogs.text += "Вы успешно отключились!";
-                }
-            }
-            catch (Exception ex)
-            {
-                //Debug.Log("Error in Btn_Connect_Click: " + ex.Message);
-                CloseSocket();
-            }
-        }
-
-        /// <summary>
-        /// Обработчик нажатия на кнопку "Статус.."
-        /// </summary>
-        public void Btn_Status_Click()
+        private void btnSend_Click(object sender, EventArgs e)
         {
             if (connected == true) // Если клиент подключен к серверу
             {
@@ -147,14 +105,45 @@ namespace Client
             }
         }
 
-        private void btnSend_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Обработчик нажатия на кнопку "Подключится!"
+        /// </summary>
+        private void btnConnect_Click(object sender, EventArgs e)
         {
-            Btn_Status_Click();
-        }
+            // Заполнение переменных данными из InputField'ов
 
-        private void btnReceive_Click(object sender, EventArgs e)
-        {
+            if (tbServerAddress.Text.Contains(":"))
+            {
+                serverAddress = IPAddress.Parse(tbServerAddress.Text.Split(':')[0]);
+                serverPort = Int32.Parse(tbServerAddress.Text.Split(':')[1]);
 
+                try
+                {
+                    if (connected == false) // Если клиент не подключен
+                    {
+                        socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); // Инициализируем сокет
+                        IPEndPoint localIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 0); // Устанавливаем локальную точку клиента
+                        socket.Bind(localIP); // Привязываем точку
+
+                        serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные
+
+                        SendData("username:" + tbSenderName.Text); // Отправляем данные на сервер
+                        ReceiveData(); // Ждем ответа от сервера
+                    }
+                    else // Если клиент подключен к серверу, закрываем сокет и переводим клиент в режим не подключенного клиента
+                    {
+                        SendData("connect:close");
+                        connected = false;
+                        btnConnect.Text = "Подключиться";
+                        //txtLogs.text += "Вы успешно отключились!";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Debug.Log("Error in Btn_Connect_Click: " + ex.Message);
+                    CloseSocket();
+                }
+            }
         }
     }
 }

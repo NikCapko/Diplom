@@ -33,17 +33,19 @@
             this.lSenderName = new System.Windows.Forms.Label();
             this.lMessage = new System.Windows.Forms.Label();
             this.tbMessage = new System.Windows.Forms.TextBox();
-            this.btnReceive = new System.Windows.Forms.Button();
             this.lRecipientName = new System.Windows.Forms.Label();
             this.tbRecipientName = new System.Windows.Forms.TextBox();
             this.lKey = new System.Windows.Forms.Label();
             this.tbKey = new System.Windows.Forms.TextBox();
+            this.btnConnect = new System.Windows.Forms.Button();
+            this.lServerAddress = new System.Windows.Forms.Label();
+            this.tbServerAddress = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnSend
             // 
             this.btnSend.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSend.Location = new System.Drawing.Point(16, 329);
+            this.btnSend.Location = new System.Drawing.Point(12, 466);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(300, 37);
             this.btnSend.TabIndex = 0;
@@ -54,16 +56,17 @@
             // tbSenderName
             // 
             this.tbSenderName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbSenderName.Location = new System.Drawing.Point(16, 31);
+            this.tbSenderName.Location = new System.Drawing.Point(376, 33);
             this.tbSenderName.Name = "tbSenderName";
             this.tbSenderName.Size = new System.Drawing.Size(276, 29);
             this.tbSenderName.TabIndex = 1;
+            this.tbSenderName.Text = "user1";
             // 
             // lSenderName
             // 
             this.lSenderName.AutoSize = true;
             this.lSenderName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lSenderName.Location = new System.Drawing.Point(12, 6);
+            this.lSenderName.Location = new System.Drawing.Point(372, 8);
             this.lSenderName.Name = "lSenderName";
             this.lSenderName.Size = new System.Drawing.Size(147, 22);
             this.lSenderName.TabIndex = 2;
@@ -73,7 +76,7 @@
             // 
             this.lMessage.AutoSize = true;
             this.lMessage.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lMessage.Location = new System.Drawing.Point(12, 137);
+            this.lMessage.Location = new System.Drawing.Point(8, 274);
             this.lMessage.Name = "lMessage";
             this.lMessage.Size = new System.Drawing.Size(91, 22);
             this.lMessage.TabIndex = 3;
@@ -82,29 +85,18 @@
             // tbMessage
             // 
             this.tbMessage.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbMessage.Location = new System.Drawing.Point(16, 162);
+            this.tbMessage.Location = new System.Drawing.Point(12, 299);
             this.tbMessage.Multiline = true;
             this.tbMessage.Name = "tbMessage";
             this.tbMessage.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.tbMessage.Size = new System.Drawing.Size(640, 151);
             this.tbMessage.TabIndex = 4;
             // 
-            // btnReceive
-            // 
-            this.btnReceive.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnReceive.Location = new System.Drawing.Point(356, 329);
-            this.btnReceive.Name = "btnReceive";
-            this.btnReceive.Size = new System.Drawing.Size(300, 37);
-            this.btnReceive.TabIndex = 5;
-            this.btnReceive.Text = "Принять сообщение";
-            this.btnReceive.UseVisualStyleBackColor = true;
-            this.btnReceive.Click += new System.EventHandler(this.btnReceive_Click);
-            // 
             // lRecipientName
             // 
             this.lRecipientName.AutoSize = true;
             this.lRecipientName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lRecipientName.Location = new System.Drawing.Point(312, 6);
+            this.lRecipientName.Location = new System.Drawing.Point(12, 200);
             this.lRecipientName.Name = "lRecipientName";
             this.lRecipientName.Size = new System.Drawing.Size(139, 22);
             this.lRecipientName.TabIndex = 7;
@@ -113,7 +105,7 @@
             // tbRecipientName
             // 
             this.tbRecipientName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbRecipientName.Location = new System.Drawing.Point(316, 31);
+            this.tbRecipientName.Location = new System.Drawing.Point(16, 225);
             this.tbRecipientName.Name = "tbRecipientName";
             this.tbRecipientName.Size = new System.Drawing.Size(276, 29);
             this.tbRecipientName.TabIndex = 6;
@@ -122,7 +114,7 @@
             // 
             this.lKey.AutoSize = true;
             this.lKey.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lKey.Location = new System.Drawing.Point(12, 68);
+            this.lKey.Location = new System.Drawing.Point(12, 126);
             this.lKey.Name = "lKey";
             this.lKey.Size = new System.Drawing.Size(50, 22);
             this.lKey.TabIndex = 9;
@@ -131,21 +123,53 @@
             // tbKey
             // 
             this.tbKey.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbKey.Location = new System.Drawing.Point(16, 93);
+            this.tbKey.Location = new System.Drawing.Point(12, 151);
             this.tbKey.Name = "tbKey";
             this.tbKey.Size = new System.Drawing.Size(640, 29);
             this.tbKey.TabIndex = 8;
+            // 
+            // btnConnect
+            // 
+            this.btnConnect.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnConnect.Location = new System.Drawing.Point(12, 75);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(300, 37);
+            this.btnConnect.TabIndex = 10;
+            this.btnConnect.Text = "Подключиться";
+            this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            // 
+            // lServerAddress
+            // 
+            this.lServerAddress.AutoSize = true;
+            this.lServerAddress.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lServerAddress.Location = new System.Drawing.Point(12, 8);
+            this.lServerAddress.Name = "lServerAddress";
+            this.lServerAddress.Size = new System.Drawing.Size(111, 22);
+            this.lServerAddress.TabIndex = 11;
+            this.lServerAddress.Text = "Адрес сервера";
+            // 
+            // tbServerAddress
+            // 
+            this.tbServerAddress.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbServerAddress.Location = new System.Drawing.Point(12, 33);
+            this.tbServerAddress.Name = "tbServerAddress";
+            this.tbServerAddress.Size = new System.Drawing.Size(276, 29);
+            this.tbServerAddress.TabIndex = 12;
+            this.tbServerAddress.Text = "127.0.0.1:8083";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(668, 378);
+            this.ClientSize = new System.Drawing.Size(664, 516);
+            this.Controls.Add(this.tbServerAddress);
+            this.Controls.Add(this.lServerAddress);
+            this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.lKey);
             this.Controls.Add(this.tbKey);
             this.Controls.Add(this.lRecipientName);
             this.Controls.Add(this.tbRecipientName);
-            this.Controls.Add(this.btnReceive);
             this.Controls.Add(this.tbMessage);
             this.Controls.Add(this.lMessage);
             this.Controls.Add(this.lSenderName);
@@ -165,11 +189,13 @@
         private System.Windows.Forms.Label lSenderName;
         private System.Windows.Forms.Label lMessage;
         private System.Windows.Forms.TextBox tbMessage;
-        private System.Windows.Forms.Button btnReceive;
         private System.Windows.Forms.Label lRecipientName;
         private System.Windows.Forms.TextBox tbRecipientName;
         private System.Windows.Forms.Label lKey;
         private System.Windows.Forms.TextBox tbKey;
+        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.Label lServerAddress;
+        private System.Windows.Forms.TextBox tbServerAddress;
     }
 }
 

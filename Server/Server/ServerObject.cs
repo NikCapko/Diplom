@@ -85,7 +85,9 @@ namespace Server
                     {
                         string[] codes = builder.ToString().Split(':');
                         foreach (string s in codes)
+                        {
                             listData.Add(s);
+                        }
 
                         AddUser(senderFullIP);
                         firstUser = true;
@@ -103,7 +105,9 @@ namespace Server
                     {
                         string[] codes = builder.ToString().Split(':');
                         foreach (string s in codes)
+                        {
                             listData.Add(s);
+                        }
 
                         AddUser(senderFullIP);
 
@@ -134,12 +138,17 @@ namespace Server
         public void BroadcastMessage(string address, bool reply)
         {
             for (int i = 0; i < users.Count; i++)
-                if (users[i].user.FullInfoIP.Address.ToString() != address && !reply)
+            {
+                /*if (users[i].user.FullInfoIP.Address.ToString() != address && !reply)
                 {
                     acceptSocket.SendTo(buffer, users[i].user.FullInfoIP);
                 }
-                else if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                else */
+                if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                {
                     acceptSocket.SendTo(buffer, users[i].user.FullInfoIP);
+                }
+            }
         }
 
         /// <summary>
@@ -151,26 +160,29 @@ namespace Server
         public void BroadcastMessage(byte[] data, string address, bool reply)
         {
             for (int i = 0; i < users.Count; i++)
-                if (users[i].user.FullInfoIP.Address.ToString() != address && !reply)
+            {
+                /*if (users[i].user.FullInfoIP.Address.ToString() != address && !reply)
                 {
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
                 }
-                else if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                else */
+                if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                {
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
+                }
+            }
         }
 
         /// <summary>
         /// Добавление клиента в список "подключенных"
         /// </summary>
         /// <param name="senderFullIP">Информация о новом клиенте</param>
-        /// <param name="builder">Сообщение клиента</param>
         private void AddUser(IPEndPoint senderFullIP)
         {
             User user = new User();
             user.Id = Guid.NewGuid().ToString();
             user.FullInfoIP = senderFullIP;
-            user.Name = listData[0];
-            //user.Color = listData[1];
+            user.Name = listData[1];
 
             ClientObject client = new ClientObject(this, user);
 
@@ -178,8 +190,28 @@ namespace Server
 
             users.Add(client);
 
-            buffer = Encoding.UTF8.GetBytes("1");
+            buffer = Encoding.UTF8.GetBytes("success");
             BroadcastMessage(senderFullIP.Address.ToString(), true);
+        }
+
+        /// <summary>
+        /// Удаление клиента из списка "подключенных" при отключении
+        /// </summary>
+        /// <param name="senderFullIP">Информация о новом клиенте</param>
+        internal void DeleteUser(IPEndPoint senderFullIP)
+        {
+            for (int i = 0; i < users.Count; i++)
+            {
+                /*if (users[i].user.FullInfoIP.Address.ToString() != address && !reply)
+                {
+                    acceptSocket.SendTo(data, users[i].user.FullInfoIP);
+                }
+                else */
+                if (users[i].user.FullInfoIP.Address.ToString() == senderFullIP.Address.ToString())
+                {
+                    users.RemoveAt(i);
+                }
+            }
         }
 
         /// <summary>

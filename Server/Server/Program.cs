@@ -9,7 +9,6 @@ namespace Server
         {
             Console.Title = "Server";
             Console.WriteLine("Server started...");
-            Console.WriteLine();
 
             ServerObject server = new ServerObject();
             Task serverTask = new Task(server.StartServer);

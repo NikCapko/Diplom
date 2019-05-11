@@ -28,9 +28,11 @@ namespace Server
         /// <param name="data">Данные для обработки</param>
         internal void HandlerData(string data)
         {
-            string[] codes = data.Split(';');
+            string[] codes = data.Split(':');
             foreach (string s in codes)
+            {
                 listCode.Add(s);
+            }
 
             if (listCode.Count == 0)
             {
@@ -38,22 +40,17 @@ namespace Server
                 server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
                 return;
             }
-
-            for (int i = 0; i < listCode.Count; i++)
+            switch (listCode[0])
             {
-                switch (listCode[i])
-                {
-                    case "status":
-                        string message = "";
-                        for (int c = 0; c < server.users.Count; c++)
-                        {
-                            message += server.users[c].user.Name + ":" + "color" + ";\n";
-                        }
-                        Console.WriteLine(message);
-                        buffer = Encoding.UTF8.GetBytes(message);
-                        server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
-                        break;
-                }
+                case "status":
+                    string message = "";
+                    buffer = Encoding.UTF8.GetBytes(message);
+                    server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
+                    break;
+                case "connect":
+                    server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
+                    server.DeleteUser(user.FullInfoIP);
+                    break;
             }
         }
     }
