@@ -49,6 +49,7 @@
             this.btnSend.TabIndex = 0;
             this.btnSend.Text = "Отправить сообщение";
             this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // tbSenderName
             // 
@@ -95,8 +96,9 @@
             this.btnReceive.Name = "btnReceive";
             this.btnReceive.Size = new System.Drawing.Size(300, 37);
             this.btnReceive.TabIndex = 5;
-            this.btnReceive.Text = "Принять сооющение";
+            this.btnReceive.Text = "Принять сообщение";
             this.btnReceive.UseVisualStyleBackColor = true;
+            this.btnReceive.Click += new System.EventHandler(this.btnReceive_Click);
             // 
             // lRecipientName
             // 
