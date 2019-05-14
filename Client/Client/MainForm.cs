@@ -122,7 +122,7 @@ namespace Client
                     if (connected == false) // Если клиент не подключен
                     {
                         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); // Инициализируем сокет
-                        IPEndPoint localIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 0); // Устанавливаем локальную точку клиента
+                        IPEndPoint localIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8088); // Устанавливаем локальную точку клиента
                         socket.Bind(localIP); // Привязываем точку
 
                         serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные

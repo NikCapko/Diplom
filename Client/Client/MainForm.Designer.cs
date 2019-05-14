@@ -40,6 +40,7 @@
             this.btnConnect = new System.Windows.Forms.Button();
             this.lServerAddress = new System.Windows.Forms.Label();
             this.tbServerAddress = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnSend
@@ -158,11 +159,22 @@
             this.tbServerAddress.TabIndex = 12;
             this.tbServerAddress.Text = "127.0.0.1:8083";
             // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(12, 515);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox1.Size = new System.Drawing.Size(640, 151);
+            this.textBox1.TabIndex = 13;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(664, 516);
+            this.ClientSize = new System.Drawing.Size(664, 678);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tbServerAddress);
             this.Controls.Add(this.lServerAddress);
             this.Controls.Add(this.btnConnect);
@@ -196,6 +208,7 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Label lServerAddress;
         private System.Windows.Forms.TextBox tbServerAddress;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

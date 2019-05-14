@@ -8,89 +8,82 @@ namespace Client
 {
     public class RSA
     {
-        char[] characters = new char[] { '#', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
+        private static char[] characters = new char[] { '#', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
                                                         'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С',
                                                         'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь', 'Ы', 'Ъ',
                                                         'Э', 'Ю', 'Я', ' ', '1', '2', '3', '4', '5', '6', '7',
                                                         '8', '9', '0' };
 
 
+        private long p = 61, q = 71;
+        private long d, n;
+
         //зашифровать
         private void Encrypt()
         {
-            if ((textBox_p.Text.Length > 0) && (textBox_q.Text.Length > 0))
+            //long p = Convert.ToInt64(textBox_p.Text);
+            //long q = Convert.ToInt64(textBox_q.Text);
+
+            if (IsTheNumberSimple(p) && IsTheNumberSimple(q))
             {
-                long p = Convert.ToInt64(textBox_p.Text);
-                long q = Convert.ToInt64(textBox_q.Text);
+                string s = "";
 
-                if (IsTheNumberSimple(p) && IsTheNumberSimple(q))
-                {
-                    string s = "";
+                //StreamReader sr = new StreamReader("in.txt");
 
-                    StreamReader sr = new StreamReader("in.txt");
+                //while (!sr.EndOfStream)
+                //{
+                //s += sr.ReadLine();
+                //}
 
-                    while (!sr.EndOfStream)
-                    {
-                        s += sr.ReadLine();
-                    }
+                //sr.Close();
 
-                    sr.Close();
+                //s = s.ToUpper();
 
-                    s = s.ToUpper();
+                n = p * q;
+                long m = (p - 1) * (q - 1);
+                d = Calculate_d(m);
+                long e_ = Calculate_e(d, m);
 
-                    long n = p * q;
-                    long m = (p - 1) * (q - 1);
-                    long d = Calculate_d(m);
-                    long e_ = Calculate_e(d, m);
+                List<string> result = RSA_Endoce(s, e_, n);
 
-                    List<string> result = RSA_Endoce(s, e_, n);
+                //StreamWriter sw = new StreamWriter("out1.txt");
+                //foreach (string item in result)
+                //sw.WriteLine(item);
+                //sw.Close();
 
-                    StreamWriter sw = new StreamWriter("out1.txt");
-                    foreach (string item in result)
-                        sw.WriteLine(item);
-                    sw.Close();
+                //textBox_d.Text = d.ToString();
+                //textBox_n.Text = n.ToString();
 
-                    textBox_d.Text = d.ToString();
-                    textBox_n.Text = n.ToString();
-
-                    Process.Start("out1.txt");
-                }
-                else
-                    MessageBox.Show("p или q - не простые числа!");
+                //Process.Start("out1.txt");
             }
             else
-                MessageBox.Show("Введите p и q!");
+            { }
         }
 
         //расшифровать
-        private void Decrypt()
+        private void Decrypt(String message)
         {
-            if ((textBox_d.Text.Length > 0) && (textBox_n.Text.Length > 0))
-            {
-                long d = Convert.ToInt64(textBox_d.Text);
-                long n = Convert.ToInt64(textBox_n.Text);
+            //long d = Convert.ToInt64(textBox_d.Text);
+            //long n = Convert.ToInt64(textBox_n.Text);
 
-                List<string> input = new List<string>();
+            List<string> input = new List<string> { message };
 
-                StreamReader sr = new StreamReader("out1.txt");
+            //StreamReader sr = new StreamReader("out1.txt");
 
-                while (!sr.EndOfStream)
-                {
-                    input.Add(sr.ReadLine());
-                }
+            //while (!sr.EndOfStream)
+            //{
+            //  input.Add(sr.ReadLine());
+            /// }
 
-                sr.Close();
+            // sr.Close();
 
-                string result = RSA_Dedoce(input, d, n);
+            string result = RSA_Dedoce(input, d, n);
 
-                StreamWriter sw = new StreamWriter("out2.txt");
-                sw.WriteLine(result);
-                sw.Close();
+            //StreamWriter sw = new StreamWriter("out2.txt");
+            //sw.WriteLine(result);
+            //sw.Close();
 
-                Process.Start("out2.txt");
-            }
-            else
-                MessageBox.Show("Введите секретный ключ!");
+            //Process.Start("out2.txt");
         }
 
         //проверка: простое ли число?
@@ -134,7 +127,7 @@ namespace Client
         }
 
         //расшифровать
-        private string RSA_Dedoce(List<string> input, long d, long n)
+        private static string RSA_Dedoce(List<string> input, long d, long n)
         {
             string result = "";
 

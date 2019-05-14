@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Server
@@ -20,6 +21,8 @@ namespace Server
 
         List<string> listData = new List<string>(); // Список полученных и распарсенных данных от клиента
 
+        public static ManualResetEvent socketEvent = new ManualResetEvent(false);
+
         /// <summary>
         /// Запуск сервера
         /// </summary>
@@ -34,7 +37,7 @@ namespace Server
                 acceptSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); // Создаем сокет
 
                 Task listenTask = new Task(Listen); // Создаем отдельный поток для метода
-                listenTask.Start(); // Запускаем поток
+               listenTask.Start(); // Запускаем поток
                 listenTask.Wait(); // Ожидаем завершения потока
             }
             catch (Exception ex)
@@ -167,6 +170,17 @@ namespace Server
                 }
                 else */
                 if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                {
+                    acceptSocket.SendTo(data, users[i].user.FullInfoIP);
+                }
+            }
+        }
+
+        public void BrodcastMessage(String username, byte[] data)
+        {
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].user.Name == username)
                 {
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
                 }

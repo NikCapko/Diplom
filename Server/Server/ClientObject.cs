@@ -49,6 +49,7 @@ namespace Server
                     break;
                 case "connect":
                     server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
+                    Console.WriteLine("username " + user.Name + " is disconneted");
                     server.DeleteUser(user.FullInfoIP);
                     break;
             }
