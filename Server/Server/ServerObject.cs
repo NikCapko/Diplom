@@ -37,7 +37,7 @@ namespace Server
                 acceptSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp); // Создаем сокет
 
                 Task listenTask = new Task(Listen); // Создаем отдельный поток для метода
-               listenTask.Start(); // Запускаем поток
+                listenTask.Start(); // Запускаем поток
                 listenTask.Wait(); // Ожидаем завершения потока
             }
             catch (Exception ex)
@@ -87,26 +87,36 @@ namespace Server
                     if (users.Count == 0)
                     {
                         string[] codes = builder.ToString().Split(':');
+
                         foreach (string s in codes)
                         {
                             listData.Add(s);
                         }
 
                         AddUser(senderFullIP);
+
                         firstUser = true;
                         addNewUser = false;
                         client = senderFullIP;
-                        Console.WriteLine("First connected {0}:{1} his name - {2}", senderFullIP.Address.ToString(), senderFullIP.Port.ToString(), users.Find(x => x.user.FullInfoIP == senderFullIP).user.Name);
+                        Console.WriteLine("First connected {0}:{1} his name - {2}", senderFullIP.Address.ToString(), senderFullIP.Port.ToString(), users.Find(x => x.user.FullInfoIP.ToString() == senderFullIP.ToString()).user.Name);
                     }
 
                     if (firstUser == false)
+                    {
                         for (int i = 0; i < users.Count; i++)
+                        {
                             if (users[i].user.FullInfoIP.ToString() == senderFullIP.ToString())
+                            {
                                 addNewUser = false;
+                                break;
+                            }
+                        }
+                    }
 
                     if (addNewUser == true)
                     {
                         string[] codes = builder.ToString().Split(':');
+
                         foreach (string s in codes)
                         {
                             listData.Add(s);
@@ -114,9 +124,9 @@ namespace Server
 
                         AddUser(senderFullIP);
 
-                        Console.WriteLine("Connected {0}:{1} his name - {2}", senderFullIP.Address.ToString(), senderFullIP.Port.ToString(), users.Find(x => x.user.FullInfoIP.ToString() == x.user.FullInfoIP.ToString()).user.Name);
+                        Console.WriteLine("Connected {0}:{1} his name - {2}", senderFullIP.Address.ToString(), senderFullIP.Port.ToString(), users.Find(x => x.user.FullInfoIP.ToString() == senderFullIP.ToString()).user.Name);
                     }
-                    else if (senderFullIP != client) // Если клиент от которого пришли данные уже подключен к серверу, тогда отправляем его данные на обработку
+                    else if (senderFullIP.ToString() != client.ToString()) // Если клиент от которого пришли данные уже подключен к серверу, тогда отправляем его данные на обработку
                     {
                         int index = users.FindIndex(x => x.user.FullInfoIP.ToString() == senderFullIP.ToString());
                         users[index].HandlerData(builder.ToString());
@@ -183,6 +193,7 @@ namespace Server
                 if (users[i].user.Name == username)
                 {
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
+                    break;
                 }
             }
         }
