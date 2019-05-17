@@ -101,7 +101,7 @@ namespace Server
 
                     if (firstUser == false)
                         for (int i = 0; i < users.Count; i++)
-                            if (users[i].user.FullInfoIP.Address.ToString() == senderFullIP.Address.ToString())
+                            if (users[i].user.FullInfoIP.ToString() == senderFullIP.ToString())
                                 addNewUser = false;
 
                     if (addNewUser == true)
@@ -114,11 +114,11 @@ namespace Server
 
                         AddUser(senderFullIP);
 
-                        Console.WriteLine("Connected {0}:{1} his name - {2}", senderFullIP.Address.ToString(), senderFullIP.Port.ToString(), users.Find(x => x.user.FullInfoIP.Address.ToString() == x.user.FullInfoIP.Address.ToString()).user.Name);
+                        Console.WriteLine("Connected {0}:{1} his name - {2}", senderFullIP.Address.ToString(), senderFullIP.Port.ToString(), users.Find(x => x.user.FullInfoIP.ToString() == x.user.FullInfoIP.ToString()).user.Name);
                     }
                     else if (senderFullIP != client) // Если клиент от которого пришли данные уже подключен к серверу, тогда отправляем его данные на обработку
                     {
-                        int index = users.FindIndex(x => x.user.FullInfoIP.Address.ToString() == senderFullIP.Address.ToString());
+                        int index = users.FindIndex(x => x.user.FullInfoIP.ToString() == senderFullIP.ToString());
                         users[index].HandlerData(builder.ToString());
                     }
                 }
@@ -147,7 +147,7 @@ namespace Server
                     acceptSocket.SendTo(buffer, users[i].user.FullInfoIP);
                 }
                 else */
-                if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                if (users[i].user.FullInfoIP.ToString() == address && reply)
                 {
                     acceptSocket.SendTo(buffer, users[i].user.FullInfoIP);
                 }
@@ -169,7 +169,7 @@ namespace Server
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
                 }
                 else */
-                if (users[i].user.FullInfoIP.Address.ToString() == address && reply)
+                if (users[i].user.FullInfoIP.ToString() == address && reply)
                 {
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
                 }
@@ -205,7 +205,7 @@ namespace Server
             users.Add(client);
 
             buffer = Encoding.UTF8.GetBytes("success");
-            BroadcastMessage(senderFullIP.Address.ToString(), true);
+            BroadcastMessage(senderFullIP.ToString(), true);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Server
                     acceptSocket.SendTo(data, users[i].user.FullInfoIP);
                 }
                 else */
-                if (users[i].user.FullInfoIP.Address.ToString() == senderFullIP.Address.ToString())
+                if (users[i].user.FullInfoIP.ToString() == senderFullIP.ToString())
                 {
                     users.RemoveAt(i);
                 }
