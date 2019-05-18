@@ -41,6 +41,7 @@
             this.lServerAddress = new System.Windows.Forms.Label();
             this.tbServerAddress = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.btnCheckUserName = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSend
@@ -97,7 +98,7 @@
             // 
             this.lRecipientName.AutoSize = true;
             this.lRecipientName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lRecipientName.Location = new System.Drawing.Point(12, 200);
+            this.lRecipientName.Location = new System.Drawing.Point(8, 126);
             this.lRecipientName.Name = "lRecipientName";
             this.lRecipientName.Size = new System.Drawing.Size(139, 22);
             this.lRecipientName.TabIndex = 7;
@@ -106,7 +107,7 @@
             // tbRecipientName
             // 
             this.tbRecipientName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbRecipientName.Location = new System.Drawing.Point(16, 225);
+            this.tbRecipientName.Location = new System.Drawing.Point(11, 151);
             this.tbRecipientName.Name = "tbRecipientName";
             this.tbRecipientName.Size = new System.Drawing.Size(276, 29);
             this.tbRecipientName.TabIndex = 6;
@@ -115,7 +116,7 @@
             // 
             this.lKey.AutoSize = true;
             this.lKey.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lKey.Location = new System.Drawing.Point(12, 126);
+            this.lKey.Location = new System.Drawing.Point(12, 196);
             this.lKey.Name = "lKey";
             this.lKey.Size = new System.Drawing.Size(50, 22);
             this.lKey.TabIndex = 9;
@@ -124,7 +125,7 @@
             // tbKey
             // 
             this.tbKey.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbKey.Location = new System.Drawing.Point(12, 151);
+            this.tbKey.Location = new System.Drawing.Point(11, 221);
             this.tbKey.Name = "tbKey";
             this.tbKey.Size = new System.Drawing.Size(640, 29);
             this.tbKey.TabIndex = 8;
@@ -132,7 +133,7 @@
             // btnConnect
             // 
             this.btnConnect.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnConnect.Location = new System.Drawing.Point(12, 75);
+            this.btnConnect.Location = new System.Drawing.Point(11, 68);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(300, 37);
             this.btnConnect.TabIndex = 10;
@@ -169,11 +170,23 @@
             this.textBox1.Size = new System.Drawing.Size(640, 151);
             this.textBox1.TabIndex = 13;
             // 
+            // btnCheckUserName
+            // 
+            this.btnCheckUserName.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCheckUserName.Location = new System.Drawing.Point(333, 147);
+            this.btnCheckUserName.Name = "btnCheckUserName";
+            this.btnCheckUserName.Size = new System.Drawing.Size(300, 37);
+            this.btnCheckUserName.TabIndex = 14;
+            this.btnCheckUserName.Text = "Проверить";
+            this.btnCheckUserName.UseVisualStyleBackColor = true;
+            this.btnCheckUserName.Click += new System.EventHandler(this.BtnCheckUserName_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(664, 678);
+            this.Controls.Add(this.btnCheckUserName);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tbServerAddress);
             this.Controls.Add(this.lServerAddress);
@@ -209,6 +222,7 @@
         private System.Windows.Forms.Label lServerAddress;
         private System.Windows.Forms.TextBox tbServerAddress;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button btnCheckUserName;
     }
 }
 

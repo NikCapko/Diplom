@@ -22,6 +22,8 @@ namespace Client
 
         private byte[] buffer = new byte[256]; // Массив байт, в котором будут хронится полученные данные или данные для отправки
 
+        private RSA rsa;
+
         /// <summary>
         /// Отправка данных на сервер
         /// </summary>
@@ -40,7 +42,7 @@ namespace Client
             try
             {
                 int bytes = 0; // Счетчик полученных байт с сервера
-                buffer = new byte[256]; // Массив байт, для данных полученых с сервера
+                buffer = new byte[10240]; // Массив байт, для данных полученых с сервера
 
                 StringBuilder builder = new StringBuilder();
                 EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
@@ -69,15 +71,42 @@ namespace Client
         void HandlReceivedData(string data)
         {
             // Если клиент не подключен к серверу и сообщение от сервера это "1", тогда переводим клиент в режим "подключенного клиента"
-            if (connected == false && data == "success")
+            if (connected == false)
             {
-                connected = true;
-                btnConnect.Text = "Отключиться";
+                if (data == "success")
+                {
+                    connected = true;
+                    btnConnect.Text = "Отключиться";
+                }
+                else if (data == "error")
+                {
+                    MessageBox.Show("Логин уже занят");
+                }
                 //txtLogs.text += "Вы успешно подключились!\n";
             }
             else if (connected == true) // А если клиент подключен к серверу, выводим все данные полученные с сервера на экран
             {
-                //tbMessage.Text += data + "\n";
+                if (data.StartsWith("check"))
+                {
+                    string key = data.Split(';')[0].Split(':')[1];
+                    if (key == "")
+                    {
+                        MessageBox.Show("Пользователь не найден");
+                    }
+                    else
+                    {
+                        rsa.SetEKey(Int32.Parse(key.Split('|')[0]));
+                        rsa.SetNKey(Int32.Parse(key.Split('|')[1]));
+                    }
+                }
+                else if (data.StartsWith("key"))
+                {
+                    string DesKey = rsa.decode(data.Split(';')[0].Split(':')[1]);
+                    string DesMessage = data.Split(';')[1].Split(':')[1];
+                    string login = data.Split(';')[2].Split(':')[1];
+
+                    textBox1.Text += "\r\n  " + DateTime.Now.ToString() + ": " + login + " " + DES.Decrypt(DesKey, DesMessage);
+                }
             }
         }
 
@@ -100,8 +129,11 @@ namespace Client
         {
             if (connected == true) // Если клиент подключен к серверу
             {
-                SendData("status"); // Отправляем на сервер данные
-                ReceiveData(); // Ожидаем ответ от сервера
+                string message = DES.Encrypt(tbKey.Text, tbMessage.Text);
+                string key = DES.getKey();
+                string send = "user:" + tbRecipientName.Text + ";key:" + rsa.encode(key) + ";message:" + message + ";";
+                SendData(send); // Отправляем на сервер данные
+                //ReceiveData(); // Ожидаем ответ от сервера
             }
         }
 
@@ -126,13 +158,13 @@ namespace Client
                         socket.Bind(localIP); // Привязываем точку
 
                         serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные
-
-                        SendData("username:" + tbSenderName.Text); // Отправляем данные на сервер
+                        rsa = new RSA();
+                        SendData("username:" + tbSenderName.Text + ";key:" + rsa.GetEKey().ToString() + rsa.GetNKey().ToString() + ";"); // Отправляем данные на сервер
                         ReceiveData(); // Ждем ответа от сервера
                     }
                     else // Если клиент подключен к серверу, закрываем сокет и переводим клиент в режим не подключенного клиента
                     {
-                        SendData("connect:close");
+                        SendData("disconnect");
                         connected = false;
                         btnConnect.Text = "Подключиться";
                         //txtLogs.text += "Вы успешно отключились!";
@@ -140,9 +172,19 @@ namespace Client
                 }
                 catch (Exception ex)
                 {
+                    MessageBox.Show(ex.Message);
                     //Debug.Log("Error in Btn_Connect_Click: " + ex.Message);
                     CloseSocket();
                 }
+            }
+        }
+
+        private void BtnCheckUserName_Click(object sender, EventArgs e)
+        {
+            if (connected == true) // Если клиент подключен к серверу
+            {
+                SendData("check:" + tbRecipientName.Text + ";"); // Отправляем данные на сервер
+                ReceiveData(); // Ждем ответа от сервера
             }
         }
     }

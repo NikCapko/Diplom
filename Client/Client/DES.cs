@@ -13,9 +13,12 @@ namespace Client
 
         static string[] Blocks; //сами блоки в двоичном формате
 
+        private static string _key;
+
         //зашифровать
         public static string Encrypt(string key, string message)
         {
+
             message = StringToRightLength(message);
 
             CutStringIntoBlocks(message);
@@ -34,7 +37,7 @@ namespace Client
 
             key = KeyToPrevRound(key);
 
-            //textBoxDecodeKeyWord.Text = StringFromBinaryToNormalFormat(key);
+            _key = StringFromBinaryToNormalFormat(key);
 
             string result = "";
 
@@ -47,8 +50,13 @@ namespace Client
             return StringFromBinaryToNormalFormat(result);
         }
 
+        public static string getKey()
+        {
+            return _key;
+        }
+
         //расшифровать
-        private static string Decrypt(string key, string message)
+        public static string Decrypt(string key, string message)
         {
             key = StringToBinaryFormat(key);
 

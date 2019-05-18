@@ -8,177 +8,200 @@ namespace Client
 {
     public class RSA
     {
-        private static char[] characters = new char[] { '#', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И',
-                                                        'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С',
-                                                        'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь', 'Ы', 'Ъ',
-                                                        'Э', 'Ю', 'Я', ' ', '1', '2', '3', '4', '5', '6', '7',
-                                                        '8', '9', '0' };
+        private int p; //destroy
+        private int q; //destroy
+        private int phi; //destroy
+        private int n;
+        private int e;
+        private int d;
 
-
-        private long p = 61, q = 71;
-        private long d, n;
-
-        //зашифровать
-        private void Encrypt()
+        private struct ExtendedEuclideanResult
         {
-            //long p = Convert.ToInt64(textBox_p.Text);
-            //long q = Convert.ToInt64(textBox_q.Text);
+            public int u1;
+            public int u2;
+            public int gcd;
+        }
 
-            if (IsTheNumberSimple(p) && IsTheNumberSimple(q))
+        public RSA()
+        {
+            InitKeyData();
+        }
+
+        private void InitKeyData()
+        {
+            Random random = new Random();
+
+            this.p = 7;
+            this.q = 13;
+            this.n = (ushort)(this.p * this.q);
+            this.phi = (ushort)((p - 1) * (q - 1));
+            List<int> possibleE = GetAllPossibleE(this.phi);
+
+            do
             {
-                string s = "";
-
-                //StreamReader sr = new StreamReader("in.txt");
-
-                //while (!sr.EndOfStream)
-                //{
-                //s += sr.ReadLine();
-                //}
-
-                //sr.Close();
-
-                //s = s.ToUpper();
-
-                n = p * q;
-                long m = (p - 1) * (q - 1);
-                d = Calculate_d(m);
-                long e_ = Calculate_e(d, m);
-
-                List<string> result = RSA_Endoce(s, e_, n);
-
-                //StreamWriter sw = new StreamWriter("out1.txt");
-                //foreach (string item in result)
-                //sw.WriteLine(item);
-                //sw.Close();
-
-                //textBox_d.Text = d.ToString();
-                //textBox_n.Text = n.ToString();
-
-                //Process.Start("out1.txt");
-            }
-            else
-            { }
+                this.e = possibleE[random.Next(0, possibleE.Count)];
+                this.d = ExtendedEuclide(this.e % this.phi, this.phi).u1;
+            } while (this.d < 0);
         }
 
-        //расшифровать
-        private void Decrypt(String message)
+        public int GetNKey()
         {
-            //long d = Convert.ToInt64(textBox_d.Text);
-            //long n = Convert.ToInt64(textBox_n.Text);
-
-            List<string> input = new List<string> { message };
-
-            //StreamReader sr = new StreamReader("out1.txt");
-
-            //while (!sr.EndOfStream)
-            //{
-            //  input.Add(sr.ReadLine());
-            /// }
-
-            // sr.Close();
-
-            string result = RSA_Dedoce(input, d, n);
-
-            //StreamWriter sw = new StreamWriter("out2.txt");
-            //sw.WriteLine(result);
-            //sw.Close();
-
-            //Process.Start("out2.txt");
+            return this.n;
         }
 
-        //проверка: простое ли число?
-        private bool IsTheNumberSimple(long n)
+        public void SetNKey(int n)
         {
-            if (n < 2)
-                return false;
-
-            if (n == 2)
-                return true;
-
-            for (long i = 2; i < n; i++)
-                if (n % i == 0)
-                    return false;
-
-            return true;
+            this.n = n;
         }
 
-        //зашифровать
-        private List<string> RSA_Endoce(string s, long e, long n)
+        public int GetDKey()
         {
-            List<string> result = new List<string>();
+            return this.d;
+        }
 
-            BigInteger bi;
+        public void SetDKey(int d)
+        {
+            this.d = d;
+        }
 
-            for (int i = 0; i < s.Length; i++)
+        public int GetEKey()
+        {
+            return this.e;
+        }
+
+        public void SetEKey(int e)
+        {
+            this.e = e;
+        }
+
+        public string encode(string text)
+        {
+            string outStr = "";
+            System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding();
+            byte[] strBytes = enc.GetBytes(text);
+            foreach (byte value in strBytes)
             {
-                int index = Array.IndexOf(characters, s[i]);
-
-                bi = new BigInteger(index);
-                bi = BigInteger.Pow(bi, (int)e);
-
-                BigInteger n_ = new BigInteger((int)n);
-
-                bi = bi % n_;
-
-                result.Add(bi.ToString());
+                int encryptedValue = ModuloPow(value, this.e, this.n);
+                outStr += encryptedValue + "|";
             }
 
-            return result;
+            return outStr;
         }
 
-        //расшифровать
-        private static string RSA_Dedoce(List<string> input, long d, long n)
+        public string decode(string text)
         {
-            string result = "";
-
-            BigInteger bi;
-
-            foreach (string item in input)
+            string outStr = "";
+            int[] arr = GetDecArrayFromText(text);
+            byte[] bytes = new byte[arr.Length];
+            System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding();
+            int j = 0;
+            foreach (int i in arr)
             {
-                bi = new BigInteger(Convert.ToDouble(item));
-                bi = BigInteger.Pow(bi, (int)d);
-
-                BigInteger n_ = new BigInteger((int)n);
-
-                bi = bi % n_;
-
-                int index = Convert.ToInt32(bi.ToString());
-
-                result += characters[index].ToString();
+                byte decryptedValue = (byte)ModuloPow(i, this.d, this.n);
+                bytes[j] = decryptedValue;
+                j++;
             }
-
-            return result;
+            outStr += enc.GetString(bytes);
+            return outStr;
         }
 
-        //вычисление параметра d. d должно быть взаимно простым с m
-        private long Calculate_d(long m)
+        private int[] GetDecArrayFromText(string text)
         {
-            long d = m - 1;
-
-            for (long i = 2; i <= m; i++)
-                if ((m % i == 0) && (d % i == 0)) //если имеют общие делители
+            int i = 0;
+            foreach (char c in text)
+            {
+                if (c == '|')
                 {
-                    d--;
-                    i = 1;
+                    i++;
                 }
-
-            return d;
-        }
-
-        //вычисление параметра e
-        private long Calculate_e(long d, long m)
-        {
-            long e = 10;
-
-            while (true)
-            {
-                if ((e * d) % m == 1)
-                    break;
-                else
-                    e++;
             }
 
-            return e;
+            int[] result = new int[i];
+            i = 0;
+
+            string tmp = "";
+
+            foreach (char c in text)
+            {
+                if (c != '|')
+                {
+                    tmp += c;
+                }
+                else
+                {
+                    result[i] = int.Parse(tmp);
+                    i++;
+                    tmp = "";
+                }
+            }
+
+            return result;
+        }
+
+        static int ModuloPow(int value, int pow, int modulo)
+        {
+            int result = value;
+            for (int i = 0; i < pow - 1; i++)
+            {
+                result = (result * value) % modulo;
+            }
+            return result;
+        }
+
+        /// Получить все варианты для e
+        static List<int> GetAllPossibleE(int phi)
+        {
+            List<int> result = new List<int>();
+
+            for (ushort i = 2; i < phi; i++)
+            {
+                if (ExtendedEuclide(i, phi).gcd == 1)
+                {
+                    result.Add(i);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// u1 * a + u2 * b = u3
+        /// </summary>
+        /// <param name="a">Число a</param>
+        /// <param name="b">Модуль числа</param>
+        private static ExtendedEuclideanResult ExtendedEuclide(int a, int b)
+        {
+            int u1 = 1;
+            int u3 = a;
+            int v1 = 0;
+            int v3 = b;
+
+            while (v3 > 0)
+            {
+                int q0 = u3 / v3;
+                int q1 = u3 % v3;
+
+                int tmp = v1 * q0;
+                int tn = u1 - tmp;
+                u1 = v1;
+                v1 = tn;
+
+                u3 = v3;
+                v3 = q1;
+            }
+
+            int tmp2 = u1 * (a);
+            tmp2 = u3 - (tmp2);
+            int res = tmp2 / (b);
+
+            ExtendedEuclideanResult result = new ExtendedEuclideanResult()
+            {
+                u1 = u1,
+                u2 = res,
+                gcd = u3
+            };
+
+            return result;
         }
     }
 }

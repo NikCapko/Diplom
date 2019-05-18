@@ -12,7 +12,7 @@ namespace Server
         ServerObject server;
         public User user;
 
-        static byte[] buffer = new byte[256];
+        static byte[] buffer = new byte[10240];
 
         List<string> listCode = new List<string>();
 
@@ -28,30 +28,33 @@ namespace Server
         /// <param name="data">Данные для обработки</param>
         internal void HandlerData(string data)
         {
-            string[] codes = data.Split(':');
-            foreach (string s in codes)
+            if (data.StartsWith("check"))
             {
-                listCode.Add(s);
+                string userName = data.Split(';')[0].Split(':')[1];
+                string message = "check:" + server.getUserKey(userName);
+                buffer = Encoding.UTF8.GetBytes(message);
+                server.BroadcastMessage(buffer, user.Name);
             }
-
-            if (listCode.Count == 0)
+            if (data.StartsWith("user"))
             {
-                buffer = Encoding.UTF8.GetBytes("Not receive data!!!");
+                string userName = data.Split(';')[0].Split(':')[1];
+                string pass = data.Split(';')[1].Split(':')[1];
+                string passMessage = data.Split(';')[2].Split(':')[1];
+                string message = "key:" + pass + ";message:" + passMessage + ";from:" + userName + ";";
+                buffer = Encoding.UTF8.GetBytes(message);
+                server.BroadcastMessage(buffer, userName);
+            }
+            else if (data == "status")
+            {
+                string message = "success";
+                buffer = Encoding.UTF8.GetBytes(message);
                 server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
-                return;
             }
-            switch (listCode[0])
+            else if (data == "disconnect")
             {
-                case "status":
-                    string message = "";
-                    buffer = Encoding.UTF8.GetBytes(message);
-                    server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
-                    break;
-                case "connect":
-                    server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
-                    Console.WriteLine("username " + user.Name + " is disconneted");
-                    server.DeleteUser(user.FullInfoIP);
-                    break;
+                server.BroadcastMessage(buffer, user.FullInfoIP.Address.ToString(), true);
+                Console.WriteLine("username " + user.Name + " is disconneted");
+                server.DeleteUser(user.FullInfoIP);
             }
         }
     }

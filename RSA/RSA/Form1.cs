@@ -56,7 +56,7 @@ namespace RSA
                         sw.WriteLine(item);
                     sw.Close();
 
-                    textBox_d.Text = d.ToString();
+                    textBox_d.Text = e_.ToString();
                     textBox_n.Text = n.ToString();
 
                     Process.Start("out1.txt");

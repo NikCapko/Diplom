@@ -17,7 +17,7 @@ namespace Server
         private Socket acceptSocket; // Сокет для "приема" новых клиентов
         public List<ClientObject> users = new List<ClientObject>(); // Список всех "подключенных" клиентов 
 
-        static byte[] buffer = new byte[256]; // Массив байт, в котором будут хранится полученные данные или данные для отправки
+        static byte[] buffer = new byte[10240]; // Массив байт, в котором будут хранится полученные данные или данные для отправки
 
         List<string> listData = new List<string>(); // Список полученных и распарсенных данных от клиента
 
@@ -63,7 +63,7 @@ namespace Server
                 while (true)
                 {
                     int bytes = 0; // Счетчик полученных байт с сервера
-                    buffer = new byte[256]; // Массив байт, для данных полученных с сервера
+                    buffer = new byte[10240]; // Массив байт, для данных полученных с сервера
                     listData.Clear(); // Очищаем список устаревших полученных данных
 
                     StringBuilder builder = new StringBuilder();
@@ -78,7 +78,6 @@ namespace Server
 
                     IPEndPoint senderFullIP = senderIP as IPEndPoint;
 
-
                     // Добавляем пользователя в список "подключенных"
                     bool addNewUser = true;
                     bool firstUser = false;
@@ -86,7 +85,7 @@ namespace Server
 
                     if (users.Count == 0)
                     {
-                        string[] codes = builder.ToString().Split(':');
+                        string[] codes = builder.ToString().Split(';');
 
                         foreach (string s in codes)
                         {
@@ -115,7 +114,7 @@ namespace Server
 
                     if (addNewUser == true)
                     {
-                        string[] codes = builder.ToString().Split(':');
+                        string[] codes = builder.ToString().Split(';');
 
                         foreach (string s in codes)
                         {
@@ -141,6 +140,20 @@ namespace Server
             {
                 StopServer(); // Останавливаем сервер
             }
+        }
+
+        public string getUserKey(string userName)
+        {
+            string key = "";
+            foreach (ClientObject user in users)
+            {
+                if (user.user.Name == userName)
+                {
+                    key = user.user.Key;
+                    break;
+                }
+            }
+            return key;
         }
 
         /// <summary>
@@ -185,8 +198,12 @@ namespace Server
                 }
             }
         }
-
-        public void BrodcastMessage(String username, byte[] data)
+        /// <summary>
+        /// Рассылка сообщений
+        /// </summary>
+        /// <param name="data">Массив байт который хотите отправить</param>
+        /// <param name="username">Имя получателя ( этому пользователю будет отправлено сообщение )</param>
+        public void BroadcastMessage(byte[] data, string username)
         {
             for (int i = 0; i < users.Count; i++)
             {
@@ -207,7 +224,8 @@ namespace Server
             User user = new User();
             user.Id = Guid.NewGuid().ToString();
             user.FullInfoIP = senderFullIP;
-            user.Name = listData[1];
+            user.Name = listData[0].Split(':')[1];
+            user.Key = listData[1].Split(':')[1];
 
             ClientObject client = new ClientObject(this, user);
 
