@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
 
 namespace Client
 {
     public class RSA
     {
+
         private int p; //destroy
         private int q; //destroy
         private int phi; //destroy
@@ -31,10 +29,10 @@ namespace Client
         {
             Random random = new Random();
 
-            this.p = 7;
-            this.q = 13;
-            this.n = (ushort)(this.p * this.q);
-            this.phi = (ushort)((p - 1) * (q - 1));
+            this.p = 31;
+            this.q = 23;
+            this.n = (int)(this.p * this.q);
+            this.phi = (int)((p - 1) * (q - 1));
             List<int> possibleE = GetAllPossibleE(this.phi);
 
             do
@@ -77,9 +75,11 @@ namespace Client
         public string encode(string text)
         {
             string outStr = "";
-            System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding();
-            byte[] strBytes = enc.GetBytes(text);
-            foreach (byte value in strBytes)
+            List<int> list = new List<int>();
+            foreach (char c in text)
+                list.Add(Convert.ToInt32(c));
+
+            foreach (int value in list)
             {
                 int encryptedValue = ModuloPow(value, this.e, this.n);
                 outStr += encryptedValue + "|";
@@ -92,16 +92,20 @@ namespace Client
         {
             string outStr = "";
             int[] arr = GetDecArrayFromText(text);
-            byte[] bytes = new byte[arr.Length];
-            System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding();
+
+            List<String> list = new List<string>();
+
             int j = 0;
             foreach (int i in arr)
             {
-                byte decryptedValue = (byte)ModuloPow(i, this.d, this.n);
-                bytes[j] = decryptedValue;
+                int decryptedValue = ModuloPow(i, this.d, this.n);
+                list.Add(Convert.ToChar(decryptedValue).ToString());
                 j++;
             }
-            outStr += enc.GetString(bytes);
+
+            foreach (string s in list)
+                outStr += s;
+
             return outStr;
         }
 

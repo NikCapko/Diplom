@@ -23,6 +23,7 @@ namespace Client
         private byte[] buffer = new byte[256]; // Массив байт, в котором будут хронится полученные данные или данные для отправки
 
         private RSA rsa;
+        private DES des;
 
         /// <summary>
         /// Отправка данных на сервер
@@ -102,10 +103,11 @@ namespace Client
                 else if (data.StartsWith("key"))
                 {
                     string DesKey = rsa.decode(data.Split(';')[0].Split(':')[1]);
+                    //string DesKey = data.Split(';')[0].Split(':')[1];
                     string DesMessage = data.Split(';')[1].Split(':')[1];
                     string login = data.Split(';')[2].Split(':')[1];
 
-                    textBox1.Text += "\r\n  " + DateTime.Now.ToString() + ": " + login + " " + DES.Decrypt(DesKey, DesMessage);
+                    textBox1.Text += DateTime.Now.ToString() + ": " + login + " " + des.Decrypt(DesKey, DesMessage) + "\r\n";
                 }
             }
         }
@@ -129,9 +131,10 @@ namespace Client
         {
             if (connected == true) // Если клиент подключен к серверу
             {
-                string message = DES.Encrypt(tbKey.Text, tbMessage.Text);
-                string key = DES.getKey();
-                string send = "user:" + tbRecipientName.Text + ";key:" + rsa.encode(key) + ";message:" + message + ";";
+                string message = des.Encrypt(tbKey.Text, tbMessage.Text);
+                string key = des.getKey();
+                string rsaKey = rsa.encode(key);
+                string send = "user:" + tbRecipientName.Text + ";key:" + rsaKey + ";message:" + message + ";from:" + tbSenderName.Text;
                 SendData(send); // Отправляем на сервер данные
                 //ReceiveData(); // Ожидаем ответ от сервера
             }
@@ -159,7 +162,8 @@ namespace Client
 
                         serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные
                         rsa = new RSA();
-                        SendData("username:" + tbSenderName.Text + ";key:" + rsa.GetEKey().ToString() + rsa.GetNKey().ToString() + ";"); // Отправляем данные на сервер
+                        des = new DES();
+                        SendData("username:" + tbSenderName.Text + ";key:" + rsa.GetEKey().ToString() + "|" + rsa.GetNKey().ToString() + ";"); // Отправляем данные на сервер
                         ReceiveData(); // Ждем ответа от сервера
                     }
                     else // Если клиент подключен к серверу, закрываем сокет и переводим клиент в режим не подключенного клиента

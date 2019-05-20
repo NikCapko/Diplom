@@ -93,6 +93,7 @@
             this.tbMessage.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.tbMessage.Size = new System.Drawing.Size(640, 151);
             this.tbMessage.TabIndex = 4;
+            this.tbMessage.Text = "Hello";
             // 
             // lRecipientName
             // 
@@ -129,6 +130,7 @@
             this.tbKey.Name = "tbKey";
             this.tbKey.Size = new System.Drawing.Size(640, 29);
             this.tbKey.TabIndex = 8;
+            this.tbKey.Text = "key";
             // 
             // btnConnect
             // 

@@ -40,7 +40,8 @@ namespace Server
                 string userName = data.Split(';')[0].Split(':')[1];
                 string pass = data.Split(';')[1].Split(':')[1];
                 string passMessage = data.Split(';')[2].Split(':')[1];
-                string message = "key:" + pass + ";message:" + passMessage + ";from:" + userName + ";";
+                string login = data.Split(';')[3].Split(':')[1];
+                string message = "key:" + pass + ";message:" + passMessage + ";from:" + login + ";";
                 buffer = Encoding.UTF8.GetBytes(message);
                 server.BroadcastMessage(buffer, userName);
             }

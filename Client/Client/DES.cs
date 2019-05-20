@@ -4,19 +4,24 @@ namespace Client
 {
     public class DES
     {
-        private const int sizeOfBlock = 128; //в DES размер блока 64 бит, но поскольку в unicode символ в два раза длинее, то увеличим блок тоже в два раза
-        private const int sizeOfChar = 16; //размер одного символа (in Unicode 16 bit)
+        private const int sizeOfBlock = 256; //в DES размер блока 64 бит, но поскольку в unicode символ в два раза длинее, то увеличим блок тоже в два раза
+        private const int sizeOfChar = 32; //размер одного символа (in Unicode 16 bit)
 
         private const int shiftKey = 2; //сдвиг ключа 
 
-        private const int quantityOfRounds = 16; //количество раундов
+        private const int quantityOfRounds = 32; //количество раундов
 
         static string[] Blocks; //сами блоки в двоичном формате
 
-        private static string _key;
+        private string _key;
+
+        public DES()
+        {
+
+        }
 
         //зашифровать
-        public static string Encrypt(string key, string message)
+        public string Encrypt(string key, string message)
         {
 
             message = StringToRightLength(message);
@@ -50,13 +55,13 @@ namespace Client
             return StringFromBinaryToNormalFormat(result);
         }
 
-        public static string getKey()
+        public string getKey()
         {
             return _key;
         }
 
         //расшифровать
-        public static string Decrypt(string key, string message)
+        public string Decrypt(string key, string message)
         {
             key = StringToBinaryFormat(key);
 
@@ -91,16 +96,16 @@ namespace Client
         }
 
         //доводим строку до размера, чтобы делилась на sizeOfBlock
-        private static string StringToRightLength(string input)
+        private string StringToRightLength(string input)
         {
             while (((input.Length * sizeOfChar) % sizeOfBlock) != 0)
-                input += "#";
+                input += " ";
 
             return input;
         }
 
         //разбиение обычной строки на блоки
-        private static void CutStringIntoBlocks(string input)
+        private void CutStringIntoBlocks(string input)
         {
             Blocks = new string[(input.Length * sizeOfChar) / sizeOfBlock];
 
@@ -114,7 +119,7 @@ namespace Client
         }
 
         //разбиение двоичной строки на блоки
-        private static void CutBinaryStringIntoBlocks(string input)
+        private void CutBinaryStringIntoBlocks(string input)
         {
             Blocks = new string[input.Length / sizeOfBlock];
 
@@ -125,7 +130,7 @@ namespace Client
         }
 
         //перевод строки в двоичный формат
-        private static string StringToBinaryFormat(string input)
+        private string StringToBinaryFormat(string input)
         {
             string output = "";
 
@@ -143,7 +148,7 @@ namespace Client
         }
 
         //доводим длину ключа до нужной
-        private static string CorrectKeyWord(string input, int lengthKey)
+        private string CorrectKeyWord(string input, int lengthKey)
         {
             if (input.Length > lengthKey)
                 input = input.Substring(0, lengthKey);
@@ -155,7 +160,7 @@ namespace Client
         }
 
         //шифрование DES один раунд
-        private static string EncodeDES_One_Round(string input, string key)
+        private string EncodeDES_One_Round(string input, string key)
         {
             string L = input.Substring(0, input.Length / 2);
             string R = input.Substring(input.Length / 2, input.Length / 2);
@@ -164,7 +169,7 @@ namespace Client
         }
 
         //расшифровка DES один раунд
-        private static string DecodeDES_One_Round(string input, string key)
+        private string DecodeDES_One_Round(string input, string key)
         {
             string L = input.Substring(0, input.Length / 2);
             string R = input.Substring(input.Length / 2, input.Length / 2);
@@ -173,7 +178,7 @@ namespace Client
         }
 
         //XOR двух строк с двоичными данными
-        private static string XOR(string s1, string s2)
+        private string XOR(string s1, string s2)
         {
             string result = "";
 
@@ -191,13 +196,13 @@ namespace Client
         }
 
         //шифрующая функция f. в данном случае это XOR
-        private static string f(string s1, string s2)
+        private string f(string s1, string s2)
         {
             return XOR(s1, s2);
         }
 
         //вычисление ключа для следующего раунда шифрования. циклический сдвиг >> 2
-        private static string KeyToNextRound(string key)
+        private string KeyToNextRound(string key)
         {
             for (int i = 0; i < shiftKey; i++)
             {
@@ -209,7 +214,7 @@ namespace Client
         }
 
         //вычисление ключа для следующего раунда расшифровки. циклический сдвиг << 2
-        private static string KeyToPrevRound(string key)
+        private string KeyToPrevRound(string key)
         {
             for (int i = 0; i < shiftKey; i++)
             {
@@ -221,7 +226,7 @@ namespace Client
         }
 
         //переводим строку с двоичными данными в символьный формат
-        private static string StringFromBinaryToNormalFormat(string input)
+        private string StringFromBinaryToNormalFormat(string input)
         {
             string output = "";
 
