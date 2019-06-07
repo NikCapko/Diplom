@@ -132,8 +132,11 @@ namespace Client
             if (connected == true) // Если клиент подключен к серверу
             {
                 string message = des.Encrypt(tbKey.Text, tbMessage.Text);
+                textBox2.Text = message;
                 string key = des.getKey();
+                textBox3.Text = key;
                 string rsaKey = rsa.encode(key);
+                textBox4.Text = rsaKey;
                 string send = "user:" + tbRecipientName.Text + ";key:" + rsaKey + ";message:" + message + ";from:" + tbSenderName.Text;
                 SendData(send); // Отправляем на сервер данные
                 //ReceiveData(); // Ожидаем ответ от сервера
@@ -163,7 +166,8 @@ namespace Client
                         serverPoint = new IPEndPoint(serverAddress, serverPort); // Инициализируем точку сервера, на которую клиент будет отправлять данные
                         rsa = new RSA();
                         des = new DES();
-                        SendData("username:" + tbSenderName.Text + ";key:" + rsa.GetEKey().ToString() + "|" + rsa.GetNKey().ToString() + ";"); // Отправляем данные на сервер
+                        SendData("username:" + tbSenderName.Text + ";key:" + rsa.GetEKey().ToString() + "|" + rsa.GetNKey().ToString() + ";"); 
+                        // Отправляем данные на сервер N E это открытый ключ D N это закрытый ключ
                         ReceiveData(); // Ждем ответа от сервера
                     }
                     else // Если клиент подключен к серверу, закрываем сокет и переводим клиент в режим не подключенного клиента
@@ -190,6 +194,21 @@ namespace Client
                 SendData("check:" + tbRecipientName.Text + ";"); // Отправляем данные на сервер
                 ReceiveData(); // Ждем ответа от сервера
             }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
